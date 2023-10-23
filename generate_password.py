@@ -47,7 +47,7 @@ class Generator(ctk.CTkToplevel):
 
         self.generate = ButtonWidget(self.master_frame, self.radio, 'Generate Password')
         self.generate.configure(font=('sans-serif', 18))
-        self.generate.pack(fill='x',padx=20,pady=25)
+        self.generate.pack(fill='x', padx=20, pady=25)
 
     def radio(self):
         print(self.radio_value.get())
