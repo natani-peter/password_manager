@@ -45,9 +45,10 @@ class LogIn(ctk.CTkFrame):
 
     def login(self):
         # current_user
-        email = self.email.get()
-        password = self.password.get()
-
+        # email = self.email.get()
+        # password = self.password.get()
+        email = 'natanipeter@gmail.com'
+        password = '@Natan1.'
         with lite.connect('password_manager.db') as database:
             cursor = database.cursor()
             cursor.execute('select email from users where email=?', (email,))
@@ -61,7 +62,7 @@ class LogIn(ctk.CTkFrame):
             check_password = bcrypt.checkpw(password.encode(), hashed)
             if check_password:
                 self.pack_forget()
-                Dashboard(self.parent).pack(expand=True, fill='both', padx=10, pady=10)
+                Dashboard(self.parent, email).pack(expand=True, fill='both', padx=10, pady=10)
             else:
                 box.showerror('ERROR', 'Invalid Password')
         else:

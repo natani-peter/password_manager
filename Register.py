@@ -80,10 +80,12 @@ class Register(ctk.CTkFrame):
                                     cursor.execute('insert into users (user_name,email,user_password,secret_number) '
                                                    'values (?,?,?,?)',
                                                    (username, email, hashed_password, secret_number))
-                                    box.showinfo('SUCCESS','Account Created Successfully')
+                                    database.commit()
+                                    box.showinfo('SUCCESS', 'Account Created Successfully')
                                     box.showwarning('WARNING', f"\tYour Secret Number is {secret_number}\n"
                                                                f"Keep This number Safely and Dont Share it.")
-                                    Dashboard(self.parent).pack(expand=True, fill='both', padx=10, pady=10)
+                                    self.destroy()
+                                    Dashboard(self.parent, email).pack(expand=True, fill='both', padx=10, pady=10)
                             else:
                                 box.showinfo('INFO', 'Password Is too Weak\n To Protect Your Passwords')
                         else:

@@ -1,9 +1,11 @@
 import customtkinter as ctk
 import tkinter as tk
+from tkinter import messagebox as box
 import string as alphabet
 from settings import *
 from random import choice
 from widgets import EntryWidget, RadioButton, ButtonWidget
+import sqlite3
 
 characters = list(alphabet.printable[0:93])
 
@@ -17,11 +19,16 @@ def generate_password(length):
 
 
 class Generator(ctk.CTkToplevel):
-    def __init__(self):
+    def __init__(self, user_email):
         super(Generator, self).__init__(fg_color=blue)
         self.geometry('400x450+1100+200')
         self.title('GENERATE A PASSWORD')
         self.attributes('-topmost', 1)
+        with sqlite3.connect('password_manager.db') as database:
+            cursor = database.cursor()
+            cursor.execute('select user_id from users where email=?', (user_email,))
+            self.user_id = cursor.fetchall()[0][0]
+
         self.radio_value = tk.IntVar(value=8)
         self.master_frame = ctk.CTkFrame(self, fg_color='#fff')
         self.master_frame.pack(fill='both', expand=True, padx=20, pady=10)
@@ -50,4 +57,24 @@ class Generator(ctk.CTkToplevel):
         self.generate.pack(fill='x', padx=20, pady=25)
 
     def radio(self):
-        print(self.radio_value.get())
+        self.generate.configure(state=tk.DISABLED)
+        app = self.website.get()
+        length = self.radio_value.get()
+        generated_password = generate_password(length)
+        password = generated_password
+        if len(app) == 0 or len(app) < 2:
+            box.showerror('ERROR', 'The Username, Website Or App is too Short')
+            self.generate.configure(state=tk.NORMAL)
+        else:
+            alert = box.askquestion('GENERATED PASSWORD',
+                                    f'The generated Password is:\n{password}\nWould like to use it for  {app}?')
+
+            if alert == 'yes':
+                with sqlite3.connect('password_manager.db') as database:
+                    cursor = database.cursor()
+                    cursor.execute('insert into passwords (app, password, user_id) values (?,?,?)',
+                                   (app, password, self.user_id))
+                    database.commit()
+                self.destroy()
+            else:
+                self.generate.configure(state=tk.NORMAL)

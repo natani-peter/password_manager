@@ -3,7 +3,7 @@ from settings import *
 
 
 class EntryWidget(ctk.CTkEntry):
-    def __init__(self, parent, holder):
+    def __init__(self, parent, holder=''):
         super(EntryWidget, self).__init__(parent, border_color='#fff', text_color='#115', placeholder_text=holder,
                                           placeholder_text_color='black', fg_color='#ddd', height=35,
                                           font=('sans-serif', 14))
