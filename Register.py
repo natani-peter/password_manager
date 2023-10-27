@@ -23,11 +23,9 @@ class Register(ctk.CTkFrame):
         self.email.pack(padx=30, fill='x', pady=5)
 
         self.password = EntryWidget(self, 'Enter Your Password')
-        self.password.configure(show='*')
         self.password.pack(padx=30, fill='x', pady=20)
 
         self.confirm_password = EntryWidget(self, 'Confirm Your Password')
-        self.confirm_password.configure(show='*')
         self.confirm_password.pack(padx=30, fill='x', pady=0)
 
         self.register_button = ButtonWidget(self, self.enter, 'REGISTER')

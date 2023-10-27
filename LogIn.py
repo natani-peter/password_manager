@@ -6,11 +6,13 @@ import bcrypt
 import sqlite3 as lite
 from tkinter import messagebox as box
 import re
+import time
 
 
 class LogIn(ctk.CTkFrame):
     def __init__(self, parent, func):
         super(LogIn, self).__init__(parent, fg_color='#efc')
+        self.hide_button = None
         self.confirm = None
         self.confirm_password = None
         self.password2 = None
@@ -32,6 +34,10 @@ class LogIn(ctk.CTkFrame):
         self.login_button = ButtonWidget(self, self.login, 'LOG IN')
         self.login_button.pack(padx=30, fill='x', pady=0)
 
+        self.show_button = ctk.CTkButton(self.password, text='SHOW', command=self.toggle, width=30, fg_color=blue,
+                                         height=25)
+        self.show_button.place(relx=0.98, rely=0.1, anchor='ne')
+
         self.forgot_password = ButtonWidget(self, self.password_edit, 'Forgot Password ?')
         self.forgot_password.pack(pady=30)
 
@@ -43,12 +49,21 @@ class LogIn(ctk.CTkFrame):
 
         self.register_button.configure(fg_color='#efc', hover_color='#efc', text_color=blue, height=0, width=0)
 
+    def toggle(self):
+        current_state = self.password.cget('show')
+
+        if current_state == '*':
+            self.password.configure(show='')
+            self.show_button.configure(text='HIDE')
+        else:
+            self.password.configure(show='*')
+            self.show_button.configure(text='SHOW')
+
     def login(self):
         # current_user
-        # email = self.email.get()
-        # password = self.password.get()
-        email = 'natanipeter@gmail.com'
-        password = '@Natan1.'
+        email = self.email.get()
+        password = self.password.get()
+
         with lite.connect('password_manager.db') as database:
             cursor = database.cursor()
             cursor.execute('select email from users where email=?', (email,))
@@ -61,8 +76,17 @@ class LogIn(ctk.CTkFrame):
                 hashed = cursor.fetchone()[0]
             check_password = bcrypt.checkpw(password.encode(), hashed)
             if check_password:
-                self.pack_forget()
+                self.destroy()
+                self.parent.geometry('700x450')
+
+                load_frame = ctk.CTkFrame(self.parent, fg_color='#fff')
+                load_frame.pack(expand=True, fill='both')
+                ctk.CTkLabel(load_frame, text='Loading....', font=font, text_color='#000',corner_radius=0).\
+                    pack(expand=True, fill='both')
                 Dashboard(self.parent, email).pack(expand=True, fill='both', padx=10, pady=10)
+                time.sleep(0.5)
+                load_frame.destroy()
+
             else:
                 box.showerror('ERROR', 'Invalid Password')
         else:
